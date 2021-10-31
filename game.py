@@ -1,6 +1,6 @@
 # This file is intended to define a vplayer class.
 # It will be able to:
-# 1. Define a player as a set of traps (relative,  static) and treir pos and rot.
+# 1. Define a player as a set of traps (static) and 
 #
 #
 
@@ -40,26 +40,19 @@ class col_line:
         self.y1=y1
 
 class trap:
-    def __init__(self,x0,y0,x1,y1,x2,y2,x3,y3,color, xc,yc,rot):
-        #static
-        self.pts=np.array([[x0,y0],[x1,y1],[x2,y2],[x3,y3]]).astype(float) #points relative to the center
+    def __init__(self,x0,y0,x1,y1,x2,y2,x3,y3,color):
+        self.pts=np.array([[x0,y0],[x1,y1],[x2,y2],[x3,y3]]).astype(float)
         self.color=color
-        #static hardcoded
         self.m=1.0
         self.i=100.0
-        self.frict=0.2 
-        self.frictw=1.0
-        #init
         self.col_ball=[]
         self.col_floor=[]
         self.force_cm=np.array([0.0,0.0])
         self.force_mom=0.0
         self.v=np.array([0.0,0.0])
         self.w=0.0
-        #dynamic
-        self.xc=xc
-        self.yc=yc
-
+        self.frict=0.2 
+        self.frictw=1.0
     def add_ball_collision(self,v0,v1):
         self.col_ball.append([v0,v1])
     def add_floor_collision(self,v0):
