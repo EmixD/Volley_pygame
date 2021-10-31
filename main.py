@@ -13,7 +13,7 @@ t=time.time_ns()
 screen = pygame.display.set_mode([500, 500])
 running = True
 nsins=1000000000
-frametime = 0.02*nsins # 1/fps in ns
+frametime = 0.002*nsins # 1/fps in ns
 speed = 0.5
 # frametime = 0.02*nsins # 1/fps in ns
 print("===============================")

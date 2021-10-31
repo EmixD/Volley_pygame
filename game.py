@@ -1,6 +1,6 @@
 # This file is intended to define a vplayer class.
 # It will be able to:
-# 1. Define a player as a set of traps (static) and 
+# 1. Define a player as a set of traps (relative,  static) and treir pos and rot.
 #
 #
 
@@ -40,35 +40,40 @@ class col_line:
         self.y1=y1
 
 class trap:
-    def __init__(self,x0,y0,x1,y1,x2,y2,x3,y3,color):
-        self.pts=np.array([[x0,y0],[x1,y1],[x2,y2],[x3,y3]]).astype(float)
-        self.color=color
-        self.m=1.0
-        self.i=100.0
-        self.col_ball=[]
-        self.col_floor=[]
-        self.force_cm=np.array([0.0,0.0])
-        self.force_mom=0.0
-        self.v=np.array([0.0,0.0])
-        self.w=0.0
-        self.frict=0.2 
-        self.frictw=1.0
+    def __init__(self,x0,y0,x1,y1,x2,y2,x3,y3, xc,yc,rot,color):
+        #static
+        self.pts0=np.array([[x0,y0],[x1,y1],[x2,y2],[x3,y3]]).astype(float) #points relative to the center
+        self.color=color #color for display
+        #static hardcoded
+        self.m=1.0 #mass
+        self.i=100.0 #inertia moment
+        self.frict=0.2 #lateral friction
+        self.frictw=1.0 #rotational friction
+        #init static
+        self.col_ball=[] #collision lines (given by indexes of 2 pts)
+        self.col_floor=[] #collision points (by index)
+        #dynamic
+        self.center=np.array([xc,yc]) #center of mass
+        self.rot=rot #rotation
+        #init dynamic
+        self.force_cm=np.array([0.0,0.0]) #force that acts on the center of mass
+        self.force_mom=0.0 #force momentum
+        self.v=np.array([0.0,0.0]) #lateral speed
+        self.w=0.0 #angular speed
+        #temp
+        self.pts =np.array([[x0,y0],[x1,y1],[x2,y2],[x3,y3]]).astype(float) #points (absolute, temporary variable)
+        #control
+        self.ptschanged=True
+    #one-time calls
     def add_ball_collision(self,v0,v1):
         self.col_ball.append([v0,v1])
     def add_floor_collision(self,v0):
         self.col_floor.append(v0)
-    def draw(self,screen):
-        pygame.draw.polygon(screen,self.color, self.pts)
-    def draw_col(self,screen):
-        for l in self.col_ball:
-            pygame.draw.line(screen, (255, 0, 0),self.pts[l[0]],self.pts[l[1]])
-        for v in self.col_floor:
-            pygame.draw.circle(screen, (255, 0, 0),self.pts[v],3)
-    def get_center(self): #simplistic
-        c=(self.pts[0]+self.pts[1]+self.pts[2]+self.pts[3])/4
-        return c
-    def rotate(self,angrad): #simplistic
-        c=self.get_center()
+    #helpers
+    def get_center(self): 
+        return self.center
+    def rotatepts(self,angrad): #should be applied before move
+        c=np.array([0.0,0.0])
         si=math.sin(angrad)
         co=math.cos(angrad)
         for i,pt in enumerate(self.pts):
@@ -77,9 +82,27 @@ class trap:
             yn=r[0]*si+r[1]*co
             self.pts[i][0]=c[0]+xn
             self.pts[i][1]=c[1]+yn
-    def move(self,dr):
+    def movepts(self,dr):
         for i,pt in enumerate(self.pts):
             self.pts[i]=pt+dr
+    def update_pts(self):
+        if(not self.ptschanged): 
+            return
+        print("1:",self.pts)
+        self.pts=np.copy(self.pts0)
+        print("2:",self.pts)
+        self.rotatepts(self.rot)
+        print("3:",self.pts," rot was",self.rot)
+        self.movepts(self.get_center())
+        print("4:",self.pts," dr was", self.get_center())
+        self.ptschanged=False
+    def move(self,dr):
+        self.center+self.center+dr
+        self.ptschanged=True
+    def rotate(self,angrad):
+        self.rot=self.rot+angrad
+        self.ptschanged=True
+    #forces
     def add_momentum_force(self,force,n_pt):
         rc=self.get_center()
         rpt=self.pts[n_pt]
@@ -90,9 +113,17 @@ class trap:
         self.force_mom=self.force_mom+dm
     def add_force(self,force):
         self.force_cm=self.force_cm+force
-
-
-
+    #draw
+    def draw(self,screen):
+        self.update_pts()
+        # print(self.pts)
+        pygame.draw.polygon(screen,self.color, self.pts)
+    def draw_col(self,screen):
+        self.update_pts()
+        for l in self.col_ball:
+            pygame.draw.line(screen, (255, 0, 0),self.pts[l[0]],self.pts[l[1]])
+        for v in self.col_floor:
+            pygame.draw.circle(screen, (255, 0, 0),self.pts[v],3)
 class joints:
     def __init__(self,trap1,p11,p12,trap2,p21,p22):
         self.traps=np.array([trap1,trap2])
@@ -126,18 +157,18 @@ class mussles:
 
 class player:
     def __init__(self):
-        trtoes=trap(170,390, 190,380, 190,400, 170,400,[50,50,50])
+        trtoes=trap(-10,0, 10,-10, 10,10, -10,10,   180,390,0,[50,50,50])
         trtoes.add_floor_collision(2)
         trtoes.add_floor_collision(3)
-        trfoot=trap(190,380, 210,380, 210,400, 190,400,[20,20,20])
+        trfoot=trap(-10,-10, 10,-10, 10,10, -10,10,   200,390,0,[20,20,20])
         trfoot.add_floor_collision(2)
         trfoot.add_floor_collision(3)
-        trleglow=trap(190,330, 210,330, 210,380, 190,380,[20,20,100])
-        trleghig=trap(190,280, 210,280, 210,330, 190,330,[20,20,50])
-        trbody=trap(185,200, 215,200, 215,280, 185,280,[20,20,100])
-        trarmlow=trap(190,160, 210,160, 210,200, 190,200,[20,20,150])
-        trarmhig=trap(195,120, 205,120, 210,160, 190,160,[50,20,150])
-        trhand=trap(195,100, 200,100, 205,120, 195,120,[20,20,200])
+        trleglow=trap(-10,-25, 10,-25, 10,25, -10,25,  200,355,0,[20,20,100])
+        trleghig=trap(-10,-25, 10,-25, 10,25, -10,25,   200,305,0,[20,20,50])
+        trbody=trap(-15,-40, 15,-40, 15,40, -15,40,   200,240,0,[20,20,100])
+        trarmlow=trap(-10,-20, 10,-20, 10,20, -10,20,     200,180,0,[20,20,150])
+        trarmhig=trap(-5,-20, 5,-20, 10,20, -10,20,    200,140,0,[50,20,150])
+        trhand=trap(-5,-10, 0,-10, 5,10, -5,10,    200,110,0,[20,20,200])
 
         self.traps=np.array([trtoes,trfoot,trleglow,trleghig,trbody,trarmlow,trarmhig,trhand])
 
