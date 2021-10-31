@@ -9,9 +9,9 @@ class trap:
         self.color=color #color for display
         #static hardcoded
         self.m=1.0 #mass
-        self.i=100.0 #inertia moment
-        self.frict=0.2 #lateral friction
-        self.frictw=10.0 #rotational friction
+        self.i=10000.0 #inertia moment
+        self.frict=0.1 #lateral friction
+        self.frictw=1.0 #rotational friction
         #init static
         self.col_ball=[] #collision lines (given by indexes of 2 pts)
         self.col_floor=[] #collision points (by index)
@@ -57,7 +57,7 @@ class trap:
         self.ptschanged=True
         self.update_pts()
     def move(self,dr):
-        self.center+self.center+dr
+        self.center=self.center+dr
         self.ptschanged=True
     def rotate(self,angrad):
         self.rot=self.rot+angrad
@@ -76,7 +76,6 @@ class trap:
     #draw
     def draw(self,screen):
         self.update_pts()
-        # print(self.pts)
         pygame.draw.polygon(screen,self.color, self.pts)
     def draw_col(self,screen):
         self.update_pts()
@@ -84,3 +83,5 @@ class trap:
             pygame.draw.line(screen, (255, 0, 0),self.pts[l[0]],self.pts[l[1]])
         for v in self.col_floor:
             pygame.draw.circle(screen, (255, 0, 0),self.pts[v],3)
+        pygame.draw.line(screen, (255, 0, 0),self.center,self.center+self.force_cm*0.15,1)
+        pygame.draw.circle(screen, (0, 0, 0),self.center,3)

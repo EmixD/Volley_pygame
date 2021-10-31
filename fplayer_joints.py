@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import pygame
 
 import fworldconfig as fwc
 
@@ -27,3 +28,6 @@ class joints:
         r0=self.traps[0].pts[self.p12]-self.traps[0].pts[self.p11]
         r1=self.traps[1].pts[self.p22]-self.traps[1].pts[self.p21]
         return math.atan2(r1[1],r1[0])-math.atan2(r0[1],r0[0])
+    def draw(self,screen):
+        pygame.draw.circle(screen, (0, 255, 255),self.getr0(),3)
+        pygame.draw.circle(screen, (0, 255, 0),self.getr1(),3)

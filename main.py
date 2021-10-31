@@ -12,9 +12,10 @@ t=time.time_ns()
 screen = pygame.display.set_mode([500, 500])
 running = True
 nsins=1000000000
-frametime = 0.002*nsins # 1/fps in ns
-speed = 0.5
+frametime = 0.0001*nsins # 1/fps in ns
+speed = 0.1
 p1=fp.player()
+skip_frames=50
 # frametime = 0.02*nsins # 1/fps in ns
 print("===============================")
 
@@ -29,13 +30,13 @@ def calc(t,dt):
 
 
 def redraw():
-    global p1,gr
+    global p1
     screen.fill((255, 255, 255))
     fcom.ground.draw(screen)
     p1.draw(screen)
     pygame.display.flip()
 
-
+iskip=0
 while running:
     while True:
         for event in pygame.event.get():
@@ -46,8 +47,11 @@ while running:
             break
     dt=time.time_ns()-t
     calc(t,dt)
-    redraw()
+    if(iskip==skip_frames):
+        redraw()
+        iskip=0
     t=time.time_ns()
+    iskip=iskip+1
 
 pygame.quit()
 print("MAIN HALT")

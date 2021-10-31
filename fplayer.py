@@ -6,19 +6,6 @@ import fplayer_joints as fjoi
 import fworldconfig as fwc
 import fcommon as fcom
 
-
-class col_line:
-    def __init__(self,x0,y0,x1,y1):
-        self.x0=x0
-        self.y0=y0
-        self.x1=x1
-        self.y1=y1
-
-class mussles:
-    def __init__(self,joint,func):
-        self.joint=joint
-        self.func=func #force(time)
-
 class player:
     def __init__(self):
         trtoes=ftrap.trap(-10,0, 10,-10, 10,10, -10,10,   180,390,0,[50,50,50])
@@ -45,21 +32,21 @@ class player:
         jarmhighand=fjoi.joints(trarmhig,0,1,trhand,3,2)
         self.joints=np.array([jtoesfoot,jfootleglow,jleglowleghig,jleggigbody,jbodyarmlow,jarmlowarmhig,jarmhighand])
 
-        m1=fmus.m_hold_angle(0,10000)
-        m2=fmus.m_hold_angle(0,10000)
-        m3=fmus.m_hold_angle(0,10000)
-        m4=fmus.m_hold_angle(0,10000)
-        m5=fmus.m_hold_angle(0,10000)
-        m6=fmus.m_hold_angle(0,10000)
-        m7=fmus.m_hold_angle(0,10000)
+        m1=fmus.m_hold_angle(0,1000)
+        m2=fmus.m_hold_angle(0,1000)
+        m3=fmus.m_hold_angle(0,1000)
+        m4=fmus.m_hold_angle(0,1000)
+        m5=fmus.m_hold_angle(0,1000)
+        m6=fmus.m_hold_angle(0,1000)
+        m7=fmus.m_hold_angle(0,1000)
 
-        mtoesfoot=mussles(jtoesfoot,m1.behaviour)
-        mfootleglow=mussles(jfootleglow,m2.behaviour)
-        mleglowleghig=mussles(jleglowleghig,m3.behaviour)
-        mleggigbody=mussles(jleggigbody,m4.behaviour)
-        mbodyarmlow=mussles(jbodyarmlow,m5.behaviour)
-        marmlowarmhig=mussles(jarmlowarmhig,m6.behaviour)
-        marmhighand=mussles(jarmhighand,m7.behaviour)
+        mtoesfoot=fmus.mussles(jtoesfoot,m1.behaviour)
+        mfootleglow=fmus.mussles(jfootleglow,m2.behaviour)
+        mleglowleghig=fmus.mussles(jleglowleghig,m3.behaviour)
+        mleggigbody=fmus.mussles(jleggigbody,m4.behaviour)
+        mbodyarmlow=fmus.mussles(jbodyarmlow,m5.behaviour)
+        marmlowarmhig=fmus.mussles(jarmlowarmhig,m6.behaviour)
+        marmhighand=fmus.mussles(jarmhighand,m7.behaviour)
        
         self.mussles=[mtoesfoot,mfootleglow,mleglowleghig,mleggigbody,mbodyarmlow,marmlowarmhig,marmhighand]
     def calc_forces(self):
@@ -108,6 +95,8 @@ class player:
         for t in self.traps:
             t.draw(screen)
             t.draw_col(screen)
+        for j in self.joints:
+            j.draw(screen)
 
 
 
