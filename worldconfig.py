@@ -1,0 +1,9 @@
+g=100.0 #gravity
+groundforce=100.0
+jforce=100.0
+grfr=10
+grfrw=0
+airfr=0.05
+airfrw=100
+jfr=10
+jfrw=500
