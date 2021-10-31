@@ -1,15 +1,12 @@
-from math import sin
 import pygame
 import time
-import player as p
-import common
 
-
-
-pygame.init()
-common.init()
+import fplayer as fp
+import fcommon as fcom 
 
 # INIT
+pygame.init()
+fcom.init()
 
 t=time.time_ns()
 screen = pygame.display.set_mode([500, 500])
@@ -17,7 +14,7 @@ running = True
 nsins=1000000000
 frametime = 0.002*nsins # 1/fps in ns
 speed = 0.5
-p1=p.player()
+p1=fp.player()
 # frametime = 0.02*nsins # 1/fps in ns
 print("===============================")
 
@@ -34,7 +31,7 @@ def calc(t,dt):
 def redraw():
     global p1,gr
     screen.fill((255, 255, 255))
-    common.ground.draw(screen)
+    fcom.ground.draw(screen)
     p1.draw(screen)
     pygame.display.flip()
 

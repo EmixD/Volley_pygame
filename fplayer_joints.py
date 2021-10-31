@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-import worldconfig as wc
+import fworldconfig as fwc
 
 class joints:
     def __init__(self,trap1,p11,p12,trap2,p21,p22):
@@ -10,7 +10,7 @@ class joints:
         self.p12=p12
         self.p21=p21
         self.p22=p22
-        self.force=wc.jforce
+        self.force=fwc.jforce
     def getr0(self):
         return (self.traps[0].pts[self.p11]+self.traps[0].pts[self.p12])/2
     def getr1(self):
