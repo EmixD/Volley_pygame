@@ -1,6 +1,7 @@
 import pygame
 import math
 import numpy as np
+import fworldconfig as fwc
 
 class trap:
     def __init__(self,x0,y0,x1,y1,x2,y2,x3,y3, xc,yc,rot,color):
@@ -27,6 +28,8 @@ class trap:
         self.pts =np.array([[x0,y0],[x1,y1],[x2,y2],[x3,y3]]).astype(float) #points (absolute, temporary variable)
         #control
         self.ptschanged=True
+        self.displayforces=True
+        self.printappliedforces=False
     #one-time calls
     def add_ball_collision(self,v0,v1):
         self.col_ball.append([v0,v1])
@@ -62,6 +65,19 @@ class trap:
     def rotate(self,angrad):
         self.rot=self.rot+angrad
         self.ptschanged=True
+    def printstatus(self):
+        if(self.printappliedforces):
+            self.update_pts_force()
+            print("---------------------STATUS---------------------")
+            # print("pts0   =   ",self.pts0)
+            print("pts    =   ",self.pts)
+            print("v      =   ",self.v)
+            print("w      =   ",self.w)
+            print("center =   ",self.center)
+            print("rot    =   ",self.rot)
+    def print(self,text):
+        if(self.printappliedforces):
+            print(text)
     #forces
     def add_momentum_force(self,force,n_pt):
         rc=self.get_center()
@@ -69,19 +85,27 @@ class trap:
         rr=rpt-rc
         dm=force[1]*rr[0]-force[0]*rr[1]
         self.force_mom=self.force_mom+dm
+        if(self.printappliedforces):
+            print('adding momentum, dF=',force,"  n_pt=",n_pt,"   dm=",dm,"   m=",self.force_mom)
     def add_momentum(self,dm):
         self.force_mom=self.force_mom+dm
+        if(self.printappliedforces):
+            print("adding pure momentum dm=",dm,"   m=",self.force_mom)
     def add_force(self,force):
         self.force_cm=self.force_cm+force
+        if(self.printappliedforces):
+            print('adding force, dF=',force,"   F=",self.force_cm)
     #draw
     def draw(self,screen):
         self.update_pts()
-        pygame.draw.polygon(screen,self.color, self.pts)
+        pygame.draw.polygon(screen,self.color, self.pts*fwc.scale)
     def draw_col(self,screen):
         self.update_pts()
         for l in self.col_ball:
-            pygame.draw.line(screen, (255, 0, 0),self.pts[l[0]],self.pts[l[1]])
+            pygame.draw.line(screen, (255, 0, 0),self.pts[l[0]]*fwc.scale,self.pts[l[1]]*fwc.scale)
         for v in self.col_floor:
-            pygame.draw.circle(screen, (255, 0, 0),self.pts[v],3)
-        pygame.draw.line(screen, (255, 0, 0),self.center,self.center+self.force_cm*0.15,1)
-        pygame.draw.circle(screen, (0, 0, 0),self.center,3)
+            pygame.draw.circle(screen, (255, 0, 0),self.pts[v]*fwc.scale,1*fwc.scale)
+        pygame.draw.circle(screen, (0, 0, 0),self.center*fwc.scale,1*fwc.scale)
+        if(self.displayforces):
+            pygame.draw.line(screen, (255, 0, 0),self.center*fwc.scale,(self.center+self.force_cm*0.15)*fwc.scale,1*fwc.scale)
+            pygame.draw.circle(screen, (0, 0, 0),self.center*fwc.scale,3*fwc.scale)

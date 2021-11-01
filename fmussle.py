@@ -13,7 +13,7 @@ class m_hold_angle:
         self.angle=angle #angle to hold
         self.mom=mom #force momentum
     def behaviour(self,angle,t):  
-        return -self.mom*math.sin(angle-self.angle)
+        return self.mom*math.sin(angle-self.angle)
     def set(self,angle,mom):
         self.angle=angle
         self.mom=mom

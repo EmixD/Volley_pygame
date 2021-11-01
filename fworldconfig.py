@@ -1,4 +1,5 @@
-g=100.0 #gravity
+scale=1
+g=100.0*0 #gravity
 groundforce=100.0
 jforce=500.0 #500
 grfr=10

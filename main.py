@@ -3,19 +3,20 @@ import time
 
 import fplayer as fp
 import fcommon as fcom 
+import fworldconfig as fwc
 
 # INIT
 pygame.init()
 fcom.init()
 
 t=time.time_ns()
-screen = pygame.display.set_mode([500, 500])
+screen = pygame.display.set_mode([500*fwc.scale, 500*fwc.scale])
 running = True
 nsins=1000000000
 frametime = 0.0001*nsins # 1/fps in ns
-speed = 0.1
+speed = 1.0
 p1=fp.player()
-skip_frames=50
+skip_frames=10
 # frametime = 0.02*nsins # 1/fps in ns
 print("===============================")
 
@@ -31,7 +32,7 @@ def calc(t,dt):
 
 def redraw():
     global p1
-    screen.fill((255, 255, 255))
+    screen.fill((150, 150, 150))
     fcom.ground.draw(screen)
     p1.draw(screen)
     pygame.display.flip()
@@ -49,7 +50,7 @@ while running:
     calc(t,dt)
     if(iskip==skip_frames):
         redraw()
-        iskip=0
+        iskip=-1
     t=time.time_ns()
     iskip=iskip+1
 
