@@ -36,12 +36,12 @@ class player:
         jarmhighand=fjoi.joints(trarmhig,0,1,trhand,3,2)
         self.joints=np.array([jtoesfoot,jfootleglow,jleglowleghig,jleghigbody,jbodyarmlow,jarmlowarmhig,jarmhighand])
 
-        ang=20*3.1415926536/180.0 #RADIAN
+        ang=0*3.1415926536/180.0 #RADIAN
         fo=1000000
         m1=fmus.m_hold_angle(ang,fo)
-        m2=fmus.m_hold_angle(ang,fo)
-        m3=fmus.m_hold_angle(ang,fo)
-        m4=fmus.m_hold_angle(ang,fo)
+        m2=fmus.m_hold_angle(-15*3.1415926536/180.0,fo)
+        m3=fmus.m_hold_angle(30*3.1415926536/180.0,fo)
+        m4=fmus.m_hold_angle(-15*3.1415926536/180.0,fo)
         m5=fmus.m_hold_angle(ang,fo)
         m6=fmus.m_hold_angle(ang,fo)
         m7=fmus.m_hold_angle(ang,fo)
