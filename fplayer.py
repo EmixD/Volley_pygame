@@ -55,6 +55,12 @@ class player:
         marmhighand=fmus.mussles(jarmhighand,m7.behaviour)
        
         self.mussles=[mtoesfoot,mfootleglow,mleglowleghig,mleggigbody,mbodyarmlow,marmlowarmhig,marmhighand]
+    # calculate the next frame
+    def calc_and_move(self,dt):
+            self.calc_forces()
+            self.calc_mussle_forces()
+            self.apply_forces(dt)
+            self.move_traps(dt)
     def calc_forces(self):
         for t in self.traps:
             t.update_pts_force()
@@ -99,10 +105,10 @@ class player:
             j.traps[0].add_momentum(w*fwc.jfrw)
             j.traps[1].add_momentum(-w*fwc.jfrw)
             j.print("==========")
-    def calc_mussle_forces(self,t):
+    def calc_mussle_forces(self):
         for m in self.mussles:
             j=m.joint
-            force=m.func(j.getangle(),t)
+            force=m.func(j.getangle())
             j.traps[0].add_momentum(force)
             j.traps[1].add_momentum(-force)
     def apply_forces(self,dt):
@@ -113,12 +119,16 @@ class player:
         for t in self.traps:
             t.move(t.v*dt)
             t.rotate(t.w*dt)
+    # draw everything
     def draw(self,screen):
         for t in self.traps:
             t.draw(screen)
-            t.draw_col(screen)
-        for j in self.joints:
-            j.draw(screen)
+            # t.draw_col(screen)
+        # for j in self.joints:
+            # j.draw(screen)
+    # machine learning
+    def get_hand_height(self):
+        return self.traps[7].center[1]
 
 
 
