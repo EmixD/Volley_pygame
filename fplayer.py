@@ -1,9 +1,11 @@
 import numpy as np
 from typing import List
+import pygame
 
 import fplayer_pt as fppt
 import fplayer_ln as fpln
 import fplayer_ms as fpms
+import fplayer_bl as ball
 import fworldconfig as fwc
 # import fworldconfig as fwc
 # import fcommon as fcom
@@ -42,13 +44,16 @@ class player:
             pt.draw(screen)
         for ms in fpms.mussle.mss:
             ms.draw(screen)
+        ball.draw(screen)
 
     def move(self, dt):  # time is in game time
+        if(ball.pt[1]>=fwc.ground-ball.rad):
+            return
         for pt in fppt.point.pts:
             dr = (pt.pt-pt.pt0)*fwc.airfriction
-            pt.pt0 = pt.pt                
+            pt.pt0 = pt.pt
             pt.pt = np.array(pt.pt0)+dr
-            pt.pt[1] = pt.pt[1]+fwc.gravity*dt**2 
+            pt.pt[1] = pt.pt[1]+fwc.gravity*dt**2
 
         for ms in fpms.mussle.mss:
             dist = ms.get_current_length()
@@ -56,17 +61,43 @@ class player:
             fract = (dist-ms.length)/ms.length/2*ms.force*1.0
             fppt.point.pts[ms.id_pt0].pt = fppt.point.pts[ms.id_pt0].pt+vect*fract
             fppt.point.pts[ms.id_pt1].pt = fppt.point.pts[ms.id_pt1].pt-vect*fract
-        
+
+        balldr = ball.pt-ball.pt0
+        ball.pt0 = ball.pt
+        ball.pt = np.array(ball.pt0)+balldr
+        ball.pt[1] = ball.pt[1]+fwc.gravity*dt**2
+
+        for ln in fpln.line.lns:  # ball collision
+            line_norm = ln.get_current_length()
+            line_normalized = ln.get_current_vector()/line_norm
+            line_pt0 = fppt.point.pts[ln.id_pt0].pt
+            line_pt0_to_ball = ball.pt-line_pt0
+            projlen = np.dot(line_pt0_to_ball, line_normalized)
+
+            if(projlen < 0):
+                projlen = 0
+            if(projlen > line_norm):
+                projlen = line_norm
+
+            pt_closest_on_line = line_pt0+line_normalized*projlen
+
+            dist = np.linalg.norm(ball.pt-pt_closest_on_line)
+            if(dist < ball.rad): #TODO: fix multiple collisions
+                lineperpvectnorm = (ball.pt-pt_closest_on_line)/dist
+                shift = lineperpvectnorm*(ball.rad-dist)
+                ball.pt = ball.pt+shift
+                ball.pt0 = ball.pt0-2*np.dot(balldr, lineperpvectnorm)+shift
+
         for pt in fppt.point.pts:
-            if(pt.pt[1] > 450):  # ground hit
-                pt.pt[1] = 450
-        
+            if(pt.pt[1] > fwc.ground):  # ground hit
+                pt.pt[1] = fwc.ground
+
         for ln in fpln.line.lns:
             dist = ln.get_current_length()
             vect = ln.get_current_vector()
             fract = (dist-ln.length)/ln.length/2
             fppt.point.pts[ln.id_pt0].pt = fppt.point.pts[ln.id_pt0].pt+vect*fract
             fppt.point.pts[ln.id_pt1].pt = fppt.point.pts[ln.id_pt1].pt-vect*fract
-    
+
     def get_current_score(self):
-        return 450-fppt.point.pts[7].pt[1]
+        return fwc.ground-fppt.point.pts[7].pt[1]

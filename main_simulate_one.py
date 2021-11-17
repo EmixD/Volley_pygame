@@ -1,8 +1,6 @@
 import time
 import fplayers as fps
-import fworldconfig as fwc
 
-nsins=1000000000
 
 in_game_dt=0.1
 in_game_tmax=100
