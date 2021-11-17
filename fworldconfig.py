@@ -1,10 +1,3 @@
-scale=1
-g=100.00 #gravity
-groundforce=100.0
-jforce=500.0 #500
-grfr=10
-grfrw=0
-airfr=0.05
-airfrw=100.0
-jfr=10.0
-jfrw=1000.0
+scale=1.0 #graphics scale
+gravity=2.0#gravity
+airfriction=1-0.05
