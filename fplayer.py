@@ -68,43 +68,31 @@ class player:
             t.force_cm=np.array([0,0]) #init
             t.force_mom=0 #init
             
-            t.print("gravity:")
             t.add_force([0,fwc.g*t.m]) #gravity
-            t.print("air friction:")
             t.add_force(-fwc.airfr*t.v)
             t.add_momentum(-fwc.airfrw*t.w)
-            t.print("floor collision:")
             for p in t.col_floor: #floor collision+friction
                 if(t.pts[p][1]>fcom.ground.y0):
-                    if(t.printappliedforces):
-                        print("floor collision: dr=",(t.pts[p][1]-fcom.ground.y0))
                     force=np.array([0,-fwc.groundforce*(t.pts[p][1]-fcom.ground.y0)])
                     t.add_force(force)
                     t.add_momentum_force(force,p)
-                    t.print("floor collision: friction:")
                     t.add_force(-fwc.grfr*t.v)
                     t.add_momentum(-fwc.grfrw*t.w)
         for j in self.joints:
-            j.print("-------------joint------------")
-            if(j.printinfo):
-                print("dr=",j.r(),"  force=+- ",j.force0())
             f0=j.force0()
             f1=j.force1()
-            j.print("joint force:")
             j.traps[0].add_force(f0)
             j.traps[1].add_force(f1)
             j.traps[0].add_momentum_force(f0/2,j.p11)
             j.traps[0].add_momentum_force(f0/2,j.p12)
             j.traps[1].add_momentum_force(f1/2,j.p21)
             j.traps[1].add_momentum_force(f1/2,j.p22)
-            j.print("joint friction:")
             v=j.traps[1].v-j.traps[0].v
             j.traps[0].add_force(v*fwc.jfr)
             j.traps[1].add_force(-v*fwc.jfr)
             w=j.traps[1].w-j.traps[0].w
             j.traps[0].add_momentum(w*fwc.jfrw)
             j.traps[1].add_momentum(-w*fwc.jfrw)
-            j.print("==========")
     def calc_mussle_forces(self):
         for m in self.mussles:
             j=m.joint

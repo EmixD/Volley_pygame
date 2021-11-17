@@ -8,10 +8,10 @@ import fcommon as fcom
 import fworldconfig as fwc
 
 # INIT
-pygame.init()
+# pygame.init()
 fcom.init()
 
-screen = pygame.display.set_mode([500*fwc.scale, 500*fwc.scale])
+# screen = pygame.display.set_mode([500*fwc.scale, 500*fwc.scale])
 
 nsins=1000000000
 
@@ -26,13 +26,14 @@ calc_per_frame = int(1/(10.0**6)*frametime*speed)
 
 
 pw=fpw.pwrapper()
-pw.simulate(frametime*speed/nsins/calc_per_frame)
+# pw.simulate(frametime*speed/nsins/calc_per_frame)
+for a in range(10000):
+    pw.player.calc_and_move(frametime*speed/nsins/calc_per_frame)
+# screen.fill((150, 150, 150))
+# fcom.ground.draw(screen)
+# pw.player.draw(screen)
+# pygame.display.flip()
 
-screen.fill((150, 150, 150))
-fcom.ground.draw(screen)
-pw.player.draw(screen)
-pygame.display.flip()
-
-time.sleep(5)
-pygame.quit()
-print("MAIN HALT")
+# time.sleep(5)
+# pygame.quit()
+# print("MAIN HALT")
