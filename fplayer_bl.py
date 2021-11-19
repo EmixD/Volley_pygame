@@ -5,6 +5,7 @@ import fworldconfig as fwc
 pt = np.array([100, 100]).astype(float)  # current coordinate
 pt0 = np.array([98, 99]).astype(float)  # previous coordinate
 rad = 10
+nocollisions_yet=True
 
 
 def draw(screen):
