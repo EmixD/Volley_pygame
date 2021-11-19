@@ -5,8 +5,8 @@ import fworldconfig as fwc
 
 class ball:
     def __init__(self):
-        self.pt = np.array([100, 100]).astype(float)  # current coordinate
-        self.pt0 = np.array([98, 99]).astype(float)  # previous coordinate
+        self.pt = np.array([100, 300]).astype(float)  # current coordinate
+        self.pt0 = np.array([98, 302]).astype(float)  # previous coordinate
         self.rad = 10
         self.nocollisions_yet = True
 

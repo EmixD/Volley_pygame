@@ -90,7 +90,7 @@ class player:
                     lineperpvectnorm = (self.ball.pt-pt_closest_on_line)/dist
                     shift = lineperpvectnorm*(self.ball.rad-dist+1)
                     self.ball.pt = self.ball.pt+shift
-                    self.ball.pt0 = self.ball.pt+balldr*0.5
+                    self.ball.pt0 = self.ball.pt-balldr+lineperpvectnorm*np.dot(balldr,lineperpvectnorm)*1.8 # fullbounce=2 nobounce=1
 
         # for pt in self.ptlnms.pts:
         #     if(pt.pt[1] > fwc.ground):  # ground hit

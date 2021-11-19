@@ -6,11 +6,10 @@ import pygame
 import fworldconfig as fwc
 
 
-
 def simulate(dt, update_mussles_every, tmax, draw, screen):
     players = []  # type: List[fpw.pwrapper]
 
-    players.append(fpw.pwrapper(-0.01*np.ones((2, 6))))
+    players.append(fpw.pwrapper(0.001*np.ones((2, 6))))
 
     for pl in players:
         t = 0
