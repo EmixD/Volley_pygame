@@ -2,22 +2,19 @@
 # 
 # Every simulated player is an object of player class. 
 # Every player obj has it's own set of lines/points/mussles
+# Player simulates only microphysics (i.e. with fixed mussle properties). Mussle changes should be done on the player-wrapper level.
 
 import numpy as np
 from typing import List
 
 import fplayer_pt_ln_ms as fpptlnms
-# import fplayer_pt as fppt
-# import fplayer_ln as fpln
-# import fplayer_ms as fpms
-import fplayer_bl as ball
+import fplayer_bl as fbl
 import fworldconfig as fwc
-# import fworldconfig as fwc
-# import fcommon as fcom
 
 
 class player:
     def __init__(self):
+        self.ball=fbl.ball()
         self.ptlnms=fpptlnms.ptlnms()
         self.ptlnms.add_pt(0, 180, 400)  # toe
         self.ptlnms.add_pt(1, 200, 400)  # ankle
@@ -45,16 +42,19 @@ class player:
 
     def draw(self, screen):
         self.ptlnms.draw(screen)
-        ball.draw(screen)
+        self.ball.draw(screen)
 
     def move(self, dt):  # time is in game time
-        if(ball.pt[1]>=fwc.ground-ball.rad):
+        if(self.ball.pt[1]>=fwc.ground-self.ball.rad):
             return
         for pt in self.ptlnms.pts:
-            dr = (pt.pt-pt.pt0)*fwc.airfriction
+            dr = pt.pt-pt.pt0
             pt.pt0 = pt.pt
-            pt.pt = np.array(pt.pt0)+dr
+            pt.pt = np.array(pt.pt0)+dr*fwc.airfriction
             pt.pt[1] = pt.pt[1]+fwc.gravity*dt**2
+            if(pt.pt[1] > fwc.ground):  # ground hit
+                pt.pt[1] = fwc.ground
+                pt.pt0[1]=pt.pt[1]-dr[1]*0.5 #0.5=groundbounce
 
         for ms in self.ptlnms.mss:
             dist = self.ptlnms.get_length(ms.id_pt0,ms.id_pt1)
@@ -63,18 +63,18 @@ class player:
             self.ptlnms.pts[ms.id_pt0].pt = self.ptlnms.pts[ms.id_pt0].pt+vect*fract
             self.ptlnms.pts[ms.id_pt1].pt = self.ptlnms.pts[ms.id_pt1].pt-vect*fract
 
-        balldr = ball.pt-ball.pt0
-        ball.pt0 = ball.pt
-        ball.pt = np.array(ball.pt0)+balldr
-        ball.pt[1] = ball.pt[1]+fwc.gravity*dt**2
+        balldr = self.ball.pt-self.ball.pt0
+        self.ball.pt0 = self.ball.pt
+        self.ball.pt = np.array(self.ball.pt0)+balldr
+        self.ball.pt[1] = self.ball.pt[1]+fwc.gravity*dt**2
 
-        ball.nocollisions_yet=True
+        self.ball.nocollisions_yet=True
         for ln in self.ptlnms.lns:  # ball collision
-            if(ball.nocollisions_yet and ln.collision_ball):
+            if(self.ball.nocollisions_yet and ln.collision_ball):
                 line_norm = self.ptlnms.get_length(ln.id_pt0,ln.id_pt1)
                 line_normalized = self.ptlnms.get_vector(ln.id_pt0,ln.id_pt1)/line_norm
                 line_pt0 = self.ptlnms.pts[ln.id_pt0].pt
-                line_pt0_to_ball = ball.pt-line_pt0
+                line_pt0_to_ball = self.ball.pt-line_pt0
                 projlen = np.dot(line_pt0_to_ball, line_normalized)
 
                 if(projlen < 0):
@@ -84,17 +84,18 @@ class player:
 
                 pt_closest_on_line = line_pt0+line_normalized*projlen
 
-                dist = np.linalg.norm(ball.pt-pt_closest_on_line)
-                if(dist < ball.rad):
-                    ball.nocollisions_yet=False
-                    lineperpvectnorm = (ball.pt-pt_closest_on_line)/dist
-                    shift = lineperpvectnorm*(ball.rad-dist+1)
-                    ball.pt = ball.pt+shift
-                    ball.pt0 = ball.pt+balldr*0.5
+                dist = np.linalg.norm(self.ball.pt-pt_closest_on_line)
+                if(dist < self.ball.rad):
+                    self.ball.nocollisions_yet=False
+                    lineperpvectnorm = (self.ball.pt-pt_closest_on_line)/dist
+                    shift = lineperpvectnorm*(self.ball.rad-dist+1)
+                    self.ball.pt = self.ball.pt+shift
+                    self.ball.pt0 = self.ball.pt+balldr*0.5
 
-        for pt in self.ptlnms.pts:
-            if(pt.pt[1] > fwc.ground):  # ground hit
-                pt.pt[1] = fwc.ground
+        # for pt in self.ptlnms.pts:
+        #     if(pt.pt[1] > fwc.ground):  # ground hit
+        #         pt.pt[1] = fwc.ground
+        #         pt.pt0[1]=pt.pt[1]-
 
         for ln in self.ptlnms.lns:
             dist = self.ptlnms.get_length(ln.id_pt0,ln.id_pt1)
@@ -104,4 +105,4 @@ class player:
             self.ptlnms.pts[ln.id_pt1].pt = self.ptlnms.pts[ln.id_pt1].pt-vect*fract
 
     def get_current_score(self):
-        return fwc.ground-ball.pt[1]
+        return fwc.ground-self.ball.pt[1]

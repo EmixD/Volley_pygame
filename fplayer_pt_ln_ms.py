@@ -7,7 +7,7 @@ import fworldconfig as fwc
 class point:
     def __init__(self, id, x, y):  # id is just for debugging
         # static
-        self.color = [30,30, 30]
+        self.color = [30, 30, 30]
         self.collision_ball = False
         self.collision_ground = True
         self.allow_print = True
@@ -43,6 +43,8 @@ class mussle:
         self.id = id  # just for debugging
         # dynamic
         self.length = length  # Desired length
+        self.minlength = length*0.5
+        self.maxlength = length
         self.force = 0.1
 
 
