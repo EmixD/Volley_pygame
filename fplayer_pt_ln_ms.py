@@ -8,7 +8,6 @@ class point:
     def __init__(self, id, x, y):  # id is just for debugging
         # static
         self.color = [30, 30, 30]
-        self.collision_ball = False
         self.collision_ground = True
         self.allow_print = True
         self.id = id  # just for debugging
@@ -64,6 +63,8 @@ class ptlnms:  # points+lines+mussles objects holder + some interclass methods
     def add_ms(self, id, id_pt0, id_pt1):
         length = self.get_length(id_pt0, id_pt1)
         self.mss.append(mussle(id, id_pt0, id_pt1, length))
+        self.mss[id].minlength=abs(self.get_length(id_pt0,id_pt0+1)-self.get_length(id_pt1,id_pt0+1))+1
+        self.mss[id].maxlength=abs(self.get_length(id_pt0,id_pt0+1)+self.get_length(id_pt1,id_pt0+1))-1
 
     def get_length(self, id0, id1):
         return np.linalg.norm(self.pts[id1].pt - self.pts[id0].pt)
@@ -72,6 +73,9 @@ class ptlnms:  # points+lines+mussles objects holder + some interclass methods
         return self.pts[id1].pt - self.pts[id0].pt
 
     def draw(self, screen):
+        # head:
+        pygame.draw.circle(screen, [50,50,50], ((self.pts[4].pt+1.2*(self.get_vector(4,5)))*fwc.scale).astype(int), int(15*fwc.scale))
+        
         for ln in self.lns:
             pygame.draw.line(screen, ln.color, (self.pts[ln.id_pt0].pt*fwc.scale).astype(int),
                              (self.pts[ln.id_pt1].pt*fwc.scale).astype(int), int(10*fwc.scale))

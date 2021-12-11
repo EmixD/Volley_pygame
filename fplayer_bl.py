@@ -1,12 +1,13 @@
 import pygame
 import numpy as np
 import fworldconfig as fwc
+import random
 
 
 class ball:
-    def __init__(self):
-        self.pt = np.array([100, 300]).astype(float)  # current coordinate
-        self.pt0 = np.array([98, 302]).astype(float)  # previous coordinate
+    def __init__(self,ballindex):
+        self.pt = np.array([750-8*ballindex ,50]).astype(float)  # current coordinate
+        self.pt0 =self.pt # previous coordinate
         self.rad = 10
         self.nocollisions_yet = True
 

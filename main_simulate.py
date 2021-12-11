@@ -7,6 +7,7 @@ in_game_tmax=100
 update_mussles_every=10
 print(f"estimated time is {in_game_dt*in_game_tmax/20} seconds")
 
+fps.init(6)
 tic = time.time()
 fps.simulate(in_game_dt,update_mussles_every,in_game_tmax,False,0)
 tac = time.time()
